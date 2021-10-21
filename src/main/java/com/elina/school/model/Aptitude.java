@@ -17,13 +17,23 @@ public class Aptitude {
     private Long id;
     private String aptitude_name;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "aptitude")
     private List<Course> courses;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "aptitude")
     private List<Professor> professors;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "aptitude")
     private List<Student> students;
 
+    @Override
+    public String toString() {
+        return "Aptitude{" +
+                "id=" + id +
+                ", aptitude_name='" + aptitude_name + '\'' +
+                ", courses=" + courses +
+                ", professors=" + professors +
+                ", students=" + students +
+                '}';
+    }
 }

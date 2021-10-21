@@ -1,6 +1,7 @@
 package com.elina.school.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -19,31 +20,38 @@ public class Course {
     @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String course_title;
     private LocalDateTime start_date;
     private LocalDateTime end_date;
     private int min_grade;
 
     @ManyToOne
+    @JoinColumn(name = "status_id")
+    @JsonIgnore
     private Status status;
 
     @ManyToMany
+    @JsonIgnore
+    @JoinTable(name = "COURSE_APTITUDES",
+            joinColumns = @JoinColumn(name = "course_id"),
+            inverseJoinColumns = @JoinColumn(name = "aptitude_id"))
     private List<Aptitude> aptitudes;
 
-    @OneToMany
+    @OneToMany(mappedBy = "enrollment")
     private List<Enrollment> enrollments;
-    /*
-    @ManyToOne
-    @JoinColumn(name="department_id")
-    @JsonBackReference
-    private Department department;
-     */
 
     @Override
     public String toString() {
         return "Course{" +
                 "id=" + id +
                 ", course_title='" + course_title + '\'' +
+                ", start_date=" + start_date +
+                ", end_date=" + end_date +
+                ", min_grade=" + min_grade +
+                ", status=" + status +
+                ", aptitudes=" + aptitudes +
+                ", enrollments=" + enrollments +
                 '}';
     }
 }

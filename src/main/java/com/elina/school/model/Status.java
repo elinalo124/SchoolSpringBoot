@@ -18,6 +18,15 @@ public class Status {
 
     private String status_name;
 
-    @OneToMany
+    @OneToMany(mappedBy = "course")
     private List<Course> courses;
+
+    @Override
+    public String toString() {
+        return "Status{" +
+                "id=" + id +
+                ", status_name='" + status_name + '\'' +
+                ", courses=" + courses +
+                '}';
+    }
 }
