@@ -2,7 +2,7 @@ package com.elina.school.controller;
 
 
 import com.elina.school.model.Course;
-import com.elina.school.service.CourseServiceImpl;
+import com.elina.school.service.serviceImpl.CourseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +19,7 @@ public class CourseController {
         this.courseServiceImpl = courseServiceImpl;
     }
 
-    //CREATE
+    //CREATE 
     @PostMapping("/courses")
     public void saveCourse(@RequestBody Course newCourse){
         System.out.println("Controller is saving:\n"+newCourse);

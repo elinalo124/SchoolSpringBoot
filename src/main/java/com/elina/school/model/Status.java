@@ -16,7 +16,7 @@ public class Status {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String status_name;
+    private String name;
 
     @OneToMany(mappedBy = "course")
     private List<Course> courses;
@@ -25,7 +25,7 @@ public class Status {
     public String toString() {
         return "Status{" +
                 "id=" + id +
-                ", status_name='" + status_name + '\'' +
+                ", status_name='" + name + '\'' +
                 ", courses=" + courses +
                 '}';
     }

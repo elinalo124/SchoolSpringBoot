@@ -15,7 +15,7 @@ public class Aptitude {
     @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String aptitude_name;
+    private String name;
 
     @ManyToMany(mappedBy = "aptitude")
     private List<Course> courses;
@@ -30,7 +30,7 @@ public class Aptitude {
     public String toString() {
         return "Aptitude{" +
                 "id=" + id +
-                ", aptitude_name='" + aptitude_name + '\'' +
+                ", aptitude_name='" + name + '\'' +
                 ", courses=" + courses +
                 ", professors=" + professors +
                 ", students=" + students +
