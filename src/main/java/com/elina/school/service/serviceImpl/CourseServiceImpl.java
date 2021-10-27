@@ -80,7 +80,7 @@ public class CourseServiceImpl implements CourseService{
     }
 
     @Override
-    public void setAptitudes(List<String> aptitude_names, Long id) {
+    public void addAptitudes(List<String> aptitude_names, Long id) {
 
         Optional<Course> optionalCourse = courseRepository.findById(id);
         Course courseToUpdate;
@@ -103,7 +103,7 @@ public class CourseServiceImpl implements CourseService{
     }
 
     @Override
-    public void setStatus(String status_string, Long id) {
+    public void setStatus(String status, Long id) {
         Optional<Course> optionalCourse = courseRepository.findById(id);
         Course courseToUpdate;
         Status statusToAdd = statusRespository.findByName(status_string);

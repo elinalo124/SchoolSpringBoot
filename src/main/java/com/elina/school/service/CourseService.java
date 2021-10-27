@@ -12,6 +12,6 @@ public interface CourseService {
     List<Course> findAll();
     void deleteById(Long id);
     Course updateById(Course newCourse, Long id);
-    void setAptitudes(List<String> aptitude_names, Long id);
-    void setStatus(String status_string, Long id);
+    void addAptitudes(List<String> aptitude_names, Long id);
+    void setStatus(String status, Long id);
 }
