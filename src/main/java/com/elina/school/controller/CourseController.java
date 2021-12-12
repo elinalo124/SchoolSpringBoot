@@ -3,6 +3,7 @@ package com.elina.school.controller;
 
 import com.elina.school.exception.NotFoundException;
 import com.elina.school.model.Course;
+import com.elina.school.model.Professor;
 import com.elina.school.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,50 +24,71 @@ public class CourseController {
         this.courseService = courseService;
     }
 
-    //CREATE 
-    @PostMapping("")
+    @GetMapping("") //Displays title, description and status
+    public ResponseEntity<List<Course>> getAllCourses(){
+        List<Course> courses = courseService.findAll();
+        System.out.println("All courses\n"+courses);
+        return new ResponseEntity<List<Course>>(courses, HttpStatus.OK);
+    }
+
+    @PostMapping("") //Window with Name, description, start, end, minGrade
     public void saveCourse(@RequestBody Course newCourse){
         System.out.println("Controller is saving:\n"+newCourse);
         courseService.save(newCourse);
     }
 
-    //RETRIEVE
-    @GetMapping("/{id}")
-    public ResponseEntity<Course> getCourse(@PathVariable("id") Long id){
+    @GetMapping("/byName")
+    public ResponseEntity<Course> getCourseByName(@RequestParam("courseName") String courseName){
         try {
-            return new ResponseEntity<Course>(courseService.findById(id),
+            return new ResponseEntity<Course>(courseService.findByName(courseName),
+                    HttpStatus.OK);
+        } catch (NotFoundException exception) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Course Not Found");
+        }
+    }
+    @GetMapping("/{courseId}")
+    public ResponseEntity<Course> getCourseById(@PathVariable("id") Long courseId){
+        try {
+            return new ResponseEntity<Course>(courseService.findById(courseId),
                     HttpStatus.OK);
         } catch (NotFoundException exception) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Course Not Found");
         }
     }
 
-    @GetMapping("")
-    public ResponseEntity<List<Course>> getAllCourses(){
-        List<Course> courses = courseService.findAll();
-        System.out.println("All courses\n"+courses);
-        return new ResponseEntity<List<Course>>(courses, HttpStatus.OK);
-    }
-    //UPDATE
-    @PutMapping("/{id}")
-    public ResponseEntity<Course> updateCourse(@RequestBody Course newCourse, @PathVariable Long id) {
-        return new ResponseEntity<>(courseService.updateById(newCourse, id), HttpStatus.OK);
+    @PutMapping("/{courseId}")
+    public ResponseEntity updateCourse(@RequestBody Course newCourse, @PathVariable Long courseId) {
+        return new ResponseEntity<>(courseService.updateById(newCourse, courseId), HttpStatus.OK);
     }
 
-    @PutMapping("/aptitudes/{id}")
-    public void addAptitudes(@RequestParam(name = "aptitude_names") List<String> aptitude_names, @PathVariable("id") Long id){
-        courseService.addAptitudes(aptitude_names, id);
+    @DeleteMapping("/{courseId}")
+    void deleteCourse(@PathVariable Long courseId) {
+        courseService.deleteById(courseId);
     }
 
-    @PutMapping("/status/{id}")
-    public void setStatus(@RequestParam String status, @PathVariable("id") Long id){
-        courseService.setStatus(status, id);
+
+    @PutMapping("/{courseId}/addAptitude/{aptitudeId}")
+    public void addAptitudeToCourse(@PathVariable("courseId") Long courseId, @PathVariable("aptitudeId") Long aptitudeId){
+        courseService.addAptitudeToCourse(courseId, aptitudeId);
+    }
+    @PutMapping("/{courseId}/deleteAptitude/{aptitudeId}")
+    public void deleteAptitudeFromCourse(@PathVariable("courseId") Long courseId, @PathVariable("aptitudeId") Long aptitudeId){
+        courseService.deleteAptitudeFromCourse(courseId, aptitudeId);
     }
 
-    //DELETE
-    @DeleteMapping("/{id}")
-    void deleteCourse(@PathVariable Long id) {
-        courseService.deleteById(id);
+    @PutMapping("/{courseId}/addStudent/{studentId}")
+    public void addStudentToCourse(@PathVariable("courseId") Long courseId, @PathVariable("studentId") Long studentId){
+        courseService.addStudentToCourse(courseId, studentId);
     }
+    @PutMapping("/{courseId}/deleteStudent/{studentId}")
+    public void deleteStudentFromCourse(@PathVariable("courseId") Long courseId, @PathVariable("studentId") Long studentId){
+        courseService.deleteStudentFromCourse(courseId, studentId);
+    }
+
+    @PutMapping("/{courseId}/editEnrollment/{studentId}")
+    public void updateGrade(@PathVariable("courseId") Long courseId, @PathVariable("studentId") Long studentId, @RequestParam("grade") Integer grade){
+        courseService.updateGrade(courseId, studentId, grade);
+    }
+
 
 }

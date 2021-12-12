@@ -1,13 +1,9 @@
 package com.elina.school.service.serviceImpl;
 
 import com.elina.school.exception.NotFoundException;
-import com.elina.school.model.Aptitude;
-import com.elina.school.model.Course;
-import com.elina.school.model.Status;
-import com.elina.school.repository.AptitudeRepository;
-import com.elina.school.repository.CourseRepository;
-import com.elina.school.repository.StatusRespository;
-import com.elina.school.service.CourseService;
+import com.elina.school.model.*;
+import com.elina.school.repository.*;
+import com.elina.school.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,20 +16,56 @@ import java.util.Optional;
 @Transactional
 public class CourseServiceImpl implements CourseService{
 
-    private CourseRepository courseRepository;
-    private StatusRespository statusRespository;
     private AptitudeRepository aptitudeRepository;
+    private CourseRepository courseRepository;
+    private EnrollmentRepository enrollmentRepository;
+    private ProfessorRepository professorRepository;
+    private StudentRepository studentRepository;
+    private AptitudeService aptitudeService;
+    private CourseService courseService;
+    private EnrollmentService enrollmentService;
+    private ProfessorService professorService;
+    private StudentService studentService;
+
+    @Autowired
+    public void setAptitudeRepository(AptitudeRepository aptitudeRepository) {
+        this.aptitudeRepository = aptitudeRepository;
+    }
     @Autowired
     public void setCourseRepository(CourseRepository courseRepository) {
         this.courseRepository = courseRepository;
     }
     @Autowired
-    public void setStatusRespository(StatusRespository statusRespository) {
-        this.statusRespository = statusRespository;
+    public void setEnrollmentRepository(EnrollmentRepository enrollmentRepository) {
+        this.enrollmentRepository = enrollmentRepository;
     }
     @Autowired
-    public void setAptitudeRepository(AptitudeRepository aptitudeRepository) {
-        this.aptitudeRepository = aptitudeRepository;
+    public void setProfessorRepository(ProfessorRepository professorRepository) {
+        this.professorRepository = professorRepository;
+    }
+    @Autowired
+    public void setStudentRepository(StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
+    }
+    @Autowired
+    public void setAptitudeService(AptitudeService aptitudeService) {
+        this.aptitudeService = aptitudeService;
+    }
+    @Autowired
+    public void setCourseService(CourseService courseService) {
+        this.courseService = courseService;
+    }
+    @Autowired
+    public void setEnrollmentService(EnrollmentService enrollmentService) {
+        this.enrollmentService = enrollmentService;
+    }
+    @Autowired
+    public void setProfessorService(ProfessorService professorService) {
+        this.professorService = professorService;
+    }
+    @Autowired
+    public void setStudentService(StudentService studentService) {
+        this.studentService = studentService;
     }
 
     @Override
@@ -57,20 +89,24 @@ public class CourseServiceImpl implements CourseService{
     }
 
     @Override
-    public void deleteById(Long course_id){
-        if(courseRepository.findById(course_id).isPresent())
-            courseRepository.deleteById(course_id);
+    public Course findByName(String courseName) {
+        Optional<Course> optionalCourse = courseRepository.findCourseByCourseName(courseName);
 
+        if(optionalCourse.isPresent())
+            return optionalCourse.get();
+        else
+            throw new NotFoundException("Course Not Found");
     }
-
     @Override
     public Course updateById(Course newCourse, Long id) {
         return courseRepository.findById(id)
                 .map(course -> {
-                    course.setCourse_title(newCourse.getCourse_title());
-                    course.setStart_date(newCourse.getStart_date());
-                    course.setEnd_date(newCourse.getEnd_date());
-                    course.setMin_grade(newCourse.getMin_grade());
+                    course.setCourseName(newCourse.getCourseName());
+                    course.setCourseDescription(newCourse.getCourseDescription());
+                    course.setStartDate(newCourse.getStartDate());
+                    course.setEndDate(newCourse.getEndDate());
+                    course.setMinGrade(newCourse.getMinGrade());
+                    course.setProfessor(newCourse.getProfessor());
                     return courseRepository.save(course);
                 })
                 .orElseGet(() -> {
@@ -80,44 +116,67 @@ public class CourseServiceImpl implements CourseService{
     }
 
     @Override
-    public void addAptitudes(List<String> aptitude_names, Long id) {
-
-        Optional<Course> optionalCourse = courseRepository.findById(id);
-        Course courseToUpdate;
-        List<Aptitude> aptitudesToAdd = new ArrayList<>();
-        aptitude_names.forEach(aptitude_name -> aptitudesToAdd.add(aptitudeRepository.findByName(aptitude_name)));
-
-        if(optionalCourse.isPresent()){
-            courseToUpdate = optionalCourse.get();
-            courseToUpdate.setAptitudes(aptitudesToAdd);
-            courseRepository.save(courseToUpdate);
-            aptitudesToAdd.forEach(aptitude -> {
-                Aptitude aptitudeToUpdate = aptitudeRepository.findByName(aptitude.getName());
-                aptitudeToUpdate.getCourses().add(courseToUpdate);
-                aptitudeRepository.save(aptitudeToUpdate);
-            });
-        }
-        else
-            throw new NotFoundException("Application Not Found");
+    public void deleteById(Long courseId){
+        if(courseRepository.findById(courseId).isPresent())
+            courseRepository.deleteById(courseId);
 
     }
 
     @Override
-    public void setStatus(String status, Long id) {
-        Optional<Course> optionalCourse = courseRepository.findById(id);
-        Course courseToUpdate;
-        Status statusToAdd = statusRespository.findByName(status_string);
-
-        if(optionalCourse.isPresent()){
-            courseToUpdate = optionalCourse.get();
-            courseToUpdate.setStatus(statusToAdd);
-            courseRepository.save(courseToUpdate);
-            statusToAdd.getCourses().add(courseToUpdate);
-            statusRespository.save(statusToAdd);
-        }
-        else
-            throw new NotFoundException("Application Not Found");
+    public void addAptitudeToCourse(Long courseId, Long aptitudeId) {
+        Course courseToUpdate = courseService.findById(courseId);
+        Aptitude aptitudeToAdd = aptitudeService.findById(aptitudeId);
+        courseToUpdate.getAptitudes().add(aptitudeToAdd);
+        aptitudeToAdd.getCourses().add(courseToUpdate);
+        courseRepository.save(courseToUpdate);
+        aptitudeRepository.save(aptitudeToAdd);
 
     }
 
+    @Override
+    public void deleteAptitudeFromCourse(Long courseId, Long aptitudeId) {
+        Course courseToUpdate = courseService.findById(courseId);
+        Aptitude aptitudeToRemove = aptitudeService.findById(aptitudeId);
+        courseToUpdate.getAptitudes().remove(aptitudeToRemove);
+        aptitudeToRemove.getCourses().remove(courseToUpdate);
+        courseRepository.save(courseToUpdate);
+        aptitudeRepository.save(aptitudeToRemove);
+    }
+
+    @Override
+    public void addStudentToCourse(Long courseId, Long studentId) {
+        Course courseToUpdate = courseService.findById(courseId);
+        Student studentToAdd = studentService.findById(studentId);
+        Enrollment newEnrollment = new Enrollment();
+        newEnrollment.setCourse(courseToUpdate);
+        newEnrollment.setStudent(studentToAdd);
+
+        courseToUpdate.getEnrollments().add(newEnrollment);
+        studentToAdd.getEnrollments().add(newEnrollment);
+
+        courseRepository.save(courseToUpdate);
+        enrollmentRepository.save(newEnrollment);
+        studentRepository.save(studentToAdd);
+    }
+
+    @Override
+    public void deleteStudentFromCourse(Long courseId, Long studentId) {
+        Course courseToUpdate = courseService.findById(courseId);
+        Student studentToDelete = studentService.findById(studentId);
+        Enrollment enrollmentToDelete = enrollmentRepository.findEnrollmentByCourse_IdAndStudent_Id(courseToUpdate.getId(),studentToDelete.getId());
+
+        courseToUpdate.getEnrollments().remove(enrollmentToDelete);
+        studentToDelete.getEnrollments().remove(enrollmentToDelete);
+
+        courseRepository.save(courseToUpdate);
+        studentRepository.save(studentToDelete);
+        enrollmentRepository.delete(enrollmentToDelete);
+    }
+
+    @Override
+    public void updateGrade(Long courseId, Long studentId, Integer grade) {
+        Enrollment enrollmentToUpdate = enrollmentRepository.findEnrollmentByCourse_IdAndStudent_Id(courseId, studentId);
+        enrollmentToUpdate.setGrade(grade);
+        enrollmentRepository.save(enrollmentToUpdate);
+    }
 }

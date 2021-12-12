@@ -1,6 +1,8 @@
 package com.elina.school.controller;
 
 import com.elina.school.exception.NotFoundException;
+import com.elina.school.model.Course;
+import com.elina.school.model.Professor;
 import com.elina.school.model.Student;
 import com.elina.school.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,23 +24,6 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    //CREATE
-    @PostMapping("")
-    public void saveCourse(@RequestBody Student newStudent){
-        System.out.println("Controller is saving:\n"+newStudent);
-        studentService.save(newStudent);
-    }
-
-    //RETRIEVE
-    @GetMapping("/{id}")
-    public ResponseEntity<Student> getStudent(@PathVariable("id") Long id){
-        try {
-            return new ResponseEntity<Student>(studentService.findById(id),
-                    HttpStatus.OK);
-        } catch (NotFoundException exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Student Not Found");
-        }
-    }
 
     @GetMapping("")
     public ResponseEntity<List<Student>> getAllStudents(){
@@ -46,21 +31,54 @@ public class StudentController {
         System.out.println("All students\n"+students);
         return new ResponseEntity<List<Student>>(students, HttpStatus.OK);
     }
-
-    //UPDATE
-    @PutMapping("/add/{id}")
-    public void addAptitudes(@RequestParam(name = "aptitude_names")List<String> aptitude_names, @PathVariable("id") Long student_id){
-        studentService.addAptitudes(aptitude_names, student_id);
+    @PostMapping("")
+    public void saveCourse(@RequestBody Student newStudent){
+        System.out.println("Controller is saving:\n"+newStudent);
+        studentService.save(newStudent);
+    }
+    @GetMapping("/byName")
+    public ResponseEntity<Student> getStudentByName(@RequestParam("studentName") String studentName){
+        try {
+            return new ResponseEntity<Student>(studentService.findByName(studentName),
+                    HttpStatus.OK);
+        } catch (NotFoundException exception) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Course Not Found");
+        }
     }
 
-    @PutMapping("/delete/{id}")
-    public void deleteAptitudes(@RequestParam(name = "aptitude_names")List<String> aptitude_names, @PathVariable("id") Long student_id){
-        studentService.deleteAptitudes(aptitude_names, student_id);
+
+    @GetMapping("/{StudentId}")
+    public ResponseEntity<Student> getStudent(@PathVariable("StudentId") Long StudentId){
+        try {
+            return new ResponseEntity<Student>(studentService.findById(StudentId),
+                    HttpStatus.OK);
+        } catch (NotFoundException exception) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Student Not Found");
+        }
+    }
+    @DeleteMapping("/{StudentId}")
+    void deleteStudent(@PathVariable("StudentId") Long StudentId) {
+        studentService.deleteById(StudentId);
     }
 
-    //DELETE
-    @DeleteMapping("/{id}")
-    void deleteStudent(@PathVariable Long id) {
-        studentService.deleteById(id);
+
+
+    @PutMapping("/{studentId}/addAptitude/{aptitudeId}")
+    public void addAptitudeToStudent(@PathVariable("studentId") Long studentId, @PathVariable("aptitudeId") Long aptitudeId){
+        studentService.addAptitudeToStudent(studentId, aptitudeId);
     }
+    @PutMapping("/{studentId}/deleteAptitude/{aptitudeId}")
+    public void deleteAptitudeFromStudent(@PathVariable("studentId") Long studentId, @PathVariable("aptitudeId") Long aptitudeId){
+        studentService.deleteAptitudeFromStudent(studentId, aptitudeId);
+    }
+
+    @PutMapping("/{studentId}/addCourse/{courseId}")
+    public void addCourseToStudent(@PathVariable("studentId") Long studentId, @PathVariable("courseId") Long courseId){
+        studentService.addCourseToStudent(studentId, courseId);
+    }
+    @PutMapping("/{studentId}/deleteCourse/{courseId}")
+    public void deleteCourseFromStudent(@PathVariable("studentId") Long studentId, @PathVariable("courseId") Long courseId){
+        studentService.deleteCourseFromStudent(studentId, courseId);
+    }
+    
 }

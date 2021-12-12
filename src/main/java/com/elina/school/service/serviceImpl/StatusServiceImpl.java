@@ -14,6 +14,7 @@ import java.util.List;
 @Service("statusService")
 @Transactional
 public class StatusServiceImpl implements StatusService {
+    /*
 
     private StatusRespository statusRespository;
 
@@ -37,4 +38,6 @@ public class StatusServiceImpl implements StatusService {
         if(statusRespository.findById(status_id).isPresent())
             statusRespository.deleteById(status_id);
     }
+
+     */
 }

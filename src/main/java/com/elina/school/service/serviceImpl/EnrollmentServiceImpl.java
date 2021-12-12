@@ -40,6 +40,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         this.professorRepository = professorRepository;
     }
 
+    /*
     @Override
     public void save(LocalDateTime enroll_date, Long course_id) {
         Enrollment enrollment = new Enrollment();
@@ -115,4 +116,5 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         if(enrollmentRepository.findById(enrollment_id).isPresent())
             enrollmentRepository.deleteById(enrollment_id);
     }
+     */
 }

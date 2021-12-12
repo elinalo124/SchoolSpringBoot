@@ -1,15 +1,28 @@
 package com.elina.school.service;
 
+import com.elina.school.model.Professor;
 import com.elina.school.model.Status;
 import com.elina.school.model.Student;
 
 import java.util.List;
 
 public interface StudentService {
-    void save(Student student); //first and last name
-    Student findById(Long student_id);
     List<Student> findAll();
-    void addAptitudes(List<String> aptitude_names, Long student_id);
-    void deleteAptitudes(List<String> aptitude_names, Long student_id);
-    void deleteById(Long student_id);
+
+    void save(Student newStudent);
+
+    Student findByName(String studentName);
+
+    Student findById(Long studentId);
+
+    void deleteById(Long studentId);
+
+    void addAptitudeToStudent(Long studentId, Long aptitudeId);
+
+    void deleteAptitudeFromStudent(Long studentId, Long aptitudeId);
+
+    void addCourseToStudent(Long studentId, Long courseId);
+
+    void deleteCourseFromStudent(Long studentId, Long courseId);
+
 }

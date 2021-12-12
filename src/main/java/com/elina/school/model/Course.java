@@ -20,35 +20,40 @@ public class Course {
     @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String course_title;
-    private LocalDateTime start_date;
-    private LocalDateTime end_date;
-    private int min_grade;
+    private String courseName;
+    private String courseDescription;
+    private int minGrade;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
 
     @ManyToOne
-    @JoinColumn(name = "status_id")
+    @JoinColumn(name = "statusId")
     @JsonIgnore
     private Status status;
 
     @ManyToMany
     @JsonIgnore
     @JoinTable(name = "COURSE_APTITUDES",
-            joinColumns = @JoinColumn(name = "course_id"),
-            inverseJoinColumns = @JoinColumn(name = "aptitude_id"))
+            joinColumns = @JoinColumn(name = "courseId"),
+            inverseJoinColumns = @JoinColumn(name = "aptitudeId"))
     private List<Aptitude> aptitudes;
 
     @OneToMany(mappedBy = "enrollment")
     private List<Enrollment> enrollments;
 
+    @ManyToOne
+    @JoinColumn(name = "professorId")
+    @JsonIgnore
+    private Professor professor;
+
     @Override
     public String toString() {
         return "Course{" +
                 "id=" + id +
-                ", course_title='" + course_title + '\'' +
-                ", start_date=" + start_date +
-                ", end_date=" + end_date +
-                ", min_grade=" + min_grade +
+                ", courseName='" + courseName + '\'' +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", minGrade=" + minGrade +
                 ", status=" + status +
                 ", aptitudes=" + aptitudes +
                 ", enrollments=" + enrollments +

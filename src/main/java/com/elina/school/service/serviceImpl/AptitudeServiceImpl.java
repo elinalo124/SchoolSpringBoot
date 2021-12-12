@@ -22,11 +22,6 @@ public class AptitudeServiceImpl implements AptitudeService {
     }
 
     @Override
-    public void save(Aptitude aptitude) {
-        aptitudeRepository.save(aptitude);
-    }
-
-    @Override
     public Aptitude findById(Long id) {
         Optional<Aptitude> optionalAptitude = aptitudeRepository.findById(id);
 
@@ -37,14 +32,13 @@ public class AptitudeServiceImpl implements AptitudeService {
     }
 
     @Override
-    public List<Aptitude> findAll() {
-        return (List<Aptitude>) aptitudeRepository.findAll();
+    public Aptitude findByName(String aptitudeName){
+        Optional<Aptitude> optionalAptitude = aptitudeRepository.findAptitudeByName(aptitudeName);
+
+        if(optionalAptitude.isPresent())
+            return optionalAptitude.get();
+        else
+            throw new NotFoundException("Aptitude Not Found");
     }
 
-    @Override
-    public void deleteById(Long aptitude_id) {
-        if(aptitudeRepository.findById(aptitude_id).isPresent()){
-            aptitudeRepository.deleteById(aptitude_id);
-        }
-    }
 }
